@@ -39,3 +39,24 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.venv/
+venv/
+env/
+.Python
+
+# AI/Editor tool configs
+.agent/
+.agents/
+.continue/
+.qoder/
+.windsurf/
+skills-lock.json
+
+# GitHub Actions (keep if intentional)
+# .github/

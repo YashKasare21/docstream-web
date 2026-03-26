@@ -19,6 +19,13 @@ function formatFileSize(bytes: number): string {
   return (bytes / (1024 * 1024)).toFixed(1) + " MB";
 }
 
+/** Truncate long filenames to keep the layout clean. */
+function truncateFilename(name: string, max = 28): string {
+  if (name.length <= max) return name;
+  const ext = name.slice(name.lastIndexOf("."));
+  return name.slice(0, max - ext.length - 3) + "..." + ext;
+}
+
 export default function DropZone({
   file,
   onFileSelect,
@@ -73,10 +80,10 @@ export default function DropZone({
 
   const borderClass =
     currentState === "dragging"
-      ? "border-blue-500 bg-blue-500/10 shadow-[0_0_30px_rgba(59,130,246,0.15)]"
+      ? "border-blue-400 border-solid bg-blue-500/[0.05] shadow-[0_0_40px_rgba(59,130,246,0.15),inset_0_0_40px_rgba(59,130,246,0.05)]"
       : currentState === "selected"
-        ? "border-green-500/30 bg-slate-900/60"
-        : "border-slate-700 hover:border-blue-500/40 hover:bg-slate-900/60";
+        ? "border-green-500/30 bg-white/[0.02]"
+        : "border-white/10 bg-white/[0.02] backdrop-blur-sm hover:border-blue-500/40 hover:bg-blue-500/[0.03] hover:shadow-[0_0_30px_rgba(59,130,246,0.08)]";
 
   return (
     <div
@@ -87,7 +94,7 @@ export default function DropZone({
       onDragLeave={() => setInternalDragging(false)}
       onDrop={handleDrop}
       onClick={() => currentState === "idle" && inputRef.current?.click()}
-      className={`relative rounded-2xl border-2 border-dashed p-10 transition-all duration-300 cursor-pointer ${borderClass}`}
+      className={`relative rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-12 cursor-pointer transition-all duration-300 ${borderClass}`}
     >
       <input
         ref={inputRef}
@@ -107,30 +114,42 @@ export default function DropZone({
             exit={{ opacity: 0 }}
             className="flex flex-col items-center text-center gap-4"
           >
-            <div
-              className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+            <motion.div
+              animate={
                 currentState === "dragging"
-                  ? "bg-blue-500/20 scale-110"
+                  ? { scale: 1.15, rotate: [0, -5, 5, 0], y: 0 }
+                  : { y: [0, -6, 0], scale: 1 }
+              }
+              transition={
+                currentState === "dragging"
+                  ? { duration: 0.3 }
+                  : { duration: 3, repeat: Infinity, ease: "easeInOut" }
+              }
+              className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors duration-300 ${
+                currentState === "dragging"
+                  ? "bg-blue-500/20"
                   : "bg-blue-500/10"
               }`}
             >
-              <CloudUpload
-                className={`w-8 h-8 transition-colors ${
-                  currentState === "dragging"
-                    ? "text-blue-400"
-                    : "text-blue-500"
-                }`}
-              />
-            </div>
+              <CloudUpload className="w-12 h-12 text-blue-400 opacity-70" />
+            </motion.div>
             <div>
               <p className="text-lg font-semibold text-white">
                 {currentState === "dragging"
                   ? "Release to upload"
                   : "Drop your PDF here"}
               </p>
-              <p className="text-sm text-slate-400 mt-1">
-                or click to browse · Max 10MB
-              </p>
+              <div className="flex items-center gap-2 flex-wrap justify-center mt-3">
+                <span className="flex items-center gap-1.5 text-xs text-slate-400 bg-white/[0.04] border border-white/[0.08] rounded-full px-3 py-1">
+                  PDF only
+                </span>
+                <span className="flex items-center gap-1.5 text-xs text-slate-400 bg-white/[0.04] border border-white/[0.08] rounded-full px-3 py-1">
+                  Max 10 MB
+                </span>
+                <span className="flex items-center gap-1.5 text-xs text-slate-400 bg-white/[0.04] border border-white/[0.08] rounded-full px-3 py-1">
+                  Click or drag
+                </span>
+              </div>
             </div>
           </motion.div>
         )}
@@ -142,20 +161,20 @@ export default function DropZone({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="flex items-center justify-between gap-4"
+            className="glass-card p-4 flex items-center gap-4 w-full max-w-sm"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center">
-                <FileText className="w-6 h-6 text-red-400" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-white">{file.name}</p>
-                <p className="text-xs text-slate-500">
-                  {formatFileSize(file.size)}
-                </p>
-              </div>
+            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-red-500/20 border border-red-500/30 flex items-center justify-center">
+              <FileText className="w-5 h-5 text-red-400" />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">
+                {truncateFilename(file.name)}
+              </p>
+              <p className="text-sm text-slate-400">
+                {formatFileSize(file.size)}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
               <CheckCircle className="w-5 h-5 text-green-500" />
               <button
                 onClick={(e) => {
@@ -163,9 +182,9 @@ export default function DropZone({
                   onFileRemove();
                   if (inputRef.current) inputRef.current.value = "";
                 }}
-                className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] flex items-center justify-center transition-colors group"
               >
-                <X className="w-4 h-4 text-slate-400" />
+                <X className="w-4 h-4 text-slate-400 group-hover:text-red-400 transition-colors" />
               </button>
             </div>
           </motion.div>
@@ -182,9 +201,9 @@ export default function DropZone({
           >
             <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
             <p className="text-sm font-medium text-slate-300">Uploading...</p>
-            <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+            <div className="w-full h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
               <motion.div
-                className="h-full bg-blue-500 rounded-full"
+                className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]"
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
                 transition={{ duration: 2, ease: "easeInOut" }}
