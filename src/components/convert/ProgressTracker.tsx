@@ -1,27 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Clock, CheckCircle, Loader2 } from "lucide-react";
+import { Clock, Check, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+
+const TOTAL_MS = 13000;
 
 const stages = [
   {
     label: "Extracting PDF content",
-    subtext: "Reading text, tables and structure",
+    subtext: "PyMuPDF parsing text, images and tables",
     startAt: 0,
     endAt: 3000,
   },
   {
     label: "AI structuring document",
-    subtext: "Gemini 1.5 Flash building document AST",
+    subtext: "Gemini Flash building structured document AST",
     startAt: 3000,
     endAt: 8000,
   },
   {
     label: "Rendering LaTeX",
-    subtext: "Pandoc + XeLaTeX compiling output",
+    subtext: "Pandoc + XeLaTeX compiling publication output",
     startAt: 8000,
-    endAt: 13000,
+    endAt: TOTAL_MS,
   },
 ];
 
@@ -36,19 +38,23 @@ export default function ProgressTracker() {
     return () => clearInterval(interval);
   }, []);
 
+  /** 0–100 clamped progress percentage */
+  const pct = Math.min((elapsed / TOTAL_MS) * 100, 100);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="space-y-6"
+      className="glass-card p-6 space-y-6"
     >
-      {/* Indeterminate progress bar */}
-      <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+      {/* Glowing progress bar */}
+      <div className="h-0.5 bg-white/[0.06] rounded-full overflow-hidden mb-8">
         <motion.div
-          className="h-full w-1/3 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full"
-          animate={{ x: ["-100%", "400%"] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]"
+          initial={{ width: "0%" }}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.3, ease: "linear" }}
         />
       </div>
 
@@ -77,11 +83,26 @@ export default function ProgressTracker() {
               {/* Icon */}
               <div className="flex-shrink-0 mt-0.5">
                 {status === "done" ? (
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <div className="w-8 h-8 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center">
+                    <Check className="w-4 h-4 text-green-400" />
+                  </div>
                 ) : status === "active" ? (
-                  <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
+                  <motion.div
+                    animate={{
+                      boxShadow: [
+                        "0 0 0 0 rgba(59,130,246,0.6)",
+                        "0 0 0 8px rgba(59,130,246,0)",
+                      ],
+                    }}
+                    transition={{ repeat: Infinity, duration: 1.2 }}
+                    className="w-8 h-8 rounded-full bg-blue-500/20 border border-blue-500 flex items-center justify-center"
+                  >
+                    <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
+                  </motion.div>
                 ) : (
-                  <Clock className="w-5 h-5 text-slate-600" />
+                  <div className="w-8 h-8 rounded-full bg-white/[0.04] border border-white/[0.1] flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-slate-500" />
+                  </div>
                 )}
               </div>
 

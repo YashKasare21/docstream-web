@@ -124,3 +124,215 @@
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+/* ============================================
+   DOCSTREAM DESIGN SYSTEM — 2025 Edition
+   Glassmorphism + Motion + Depth
+   ============================================ */
+
+:root {
+  /* Core palette */
+  --bg-base: #050810;
+  --bg-surface: rgba(255, 255, 255, 0.03);
+  --bg-surface-hover: rgba(255, 255, 255, 0.06);
+  --bg-elevated: rgba(255, 255, 255, 0.08);
+
+  /* Glass effect */
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(16px);
+
+  /* Brand colors */
+  --blue-primary: #3B82F6;
+  --blue-glow: rgba(59, 130, 246, 0.4);
+  --blue-subtle: rgba(59, 130, 246, 0.1);
+  --purple-accent: #8B5CF6;
+  --purple-glow: rgba(139, 92, 246, 0.3);
+
+  /* Text */
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #475569;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.2);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.5);
+  --shadow-glow-blue: 0 0 30px rgba(59, 130, 246, 0.2);
+  --shadow-glow-purple: 0 0 30px rgba(139, 92, 246, 0.2);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Base */
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Animated mesh gradient background */
+.mesh-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%,
+      rgba(59, 130, 246, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%,
+      rgba(139, 92, 246, 0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 50% 50%,
+      rgba(16, 24, 40, 0.8) 0%, var(--bg-base) 100%);
+  animation: mesh-shift 20s ease-in-out infinite alternate;
+}
+
+@keyframes mesh-shift {
+  0% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+  }
+  100% {
+    background-position: 20% 10%, 80% 90%, 50% 50%;
+  }
+}
+
+/* Dot grid background */
+.dot-grid {
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.08) 1px,
+    transparent 1px
+  );
+  background-size: 28px 28px;
+  mask-image: radial-gradient(
+    ellipse 80% 80% at 50% 50%,
+    black 40%,
+    transparent 100%
+  );
+}
+
+/* Glass card */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  transition:
+    border-color var(--transition-base),
+    background var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.glass-card:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-surface-hover);
+  box-shadow: var(--shadow-glow-blue);
+}
+
+/* Animated gradient border */
+.gradient-border {
+  position: relative;
+  border-radius: 16px;
+  background: var(--bg-base);
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.6),
+    rgba(139, 92, 246, 0.4),
+    rgba(59, 130, 246, 0.1),
+    rgba(139, 92, 246, 0.6)
+  );
+  background-size: 300% 300%;
+  animation: gradient-rotate 4s linear infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+@keyframes gradient-rotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Shimmer button effect */
+.shimmer-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: none;
+}
+
+.shimmer-btn:hover::after {
+  animation: shimmer 0.6s ease-in-out;
+}
+
+@keyframes shimmer {
+  from { left: -100%; }
+  to { left: 200%; }
+}
+
+/* Glow text */
+.glow-text {
+  text-shadow:
+    0 0 20px rgba(59, 130, 246, 0.5),
+    0 0 60px rgba(59, 130, 246, 0.2);
+}
+
+/* Focus rings */
+*:focus-visible {
+  outline: 2px solid var(--blue-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Button press */
+button:active:not(:disabled) {
+  transform: scale(0.97);
+  transition: transform 100ms ease;
+}
+
+/* Code font */
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
