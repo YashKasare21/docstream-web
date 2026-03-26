@@ -13,8 +13,12 @@ export default function Home() {
       <main>
         <Hero />
         <UploadDemo />
-        <Features />
-        <HowItWorks />
+        <div className="section-surface">
+          <Features />
+        </div>
+        <div className="section-surface">
+          <HowItWorks />
+        </div>
         <OpenSource />
       </main>
       <Footer />

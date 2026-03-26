@@ -2,6 +2,7 @@
 
 import { useRef, useState, useCallback } from "react";
 import { CloudUpload, FileText, CheckCircle, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 type DropZoneState = "idle" | "dragging" | "selected" | "uploading";
@@ -80,10 +81,10 @@ export default function DropZone({
 
   const borderClass =
     currentState === "dragging"
-      ? "border-blue-400 border-solid bg-blue-500/[0.05] shadow-[0_0_40px_rgba(59,130,246,0.15),inset_0_0_40px_rgba(59,130,246,0.05)]"
+      ? "border-blue-400/70 border-solid bg-blue-950/30 shadow-[0_0_60px_rgba(59,130,246,0.2),inset_0_0_60px_rgba(59,130,246,0.08)]"
       : currentState === "selected"
         ? "border-green-500/30 bg-white/[0.02]"
-        : "border-white/10 bg-white/[0.02] backdrop-blur-sm hover:border-blue-500/40 hover:bg-blue-500/[0.03] hover:shadow-[0_0_30px_rgba(59,130,246,0.08)]";
+        : "border-slate-700/60 bg-slate-900/40 hover:border-blue-500/50 hover:bg-blue-950/20 hover:shadow-[0_0_40px_rgba(59,130,246,0.12),inset_0_0_40px_rgba(59,130,246,0.04)]";
 
   return (
     <div
@@ -131,7 +132,7 @@ export default function DropZone({
                   : "bg-blue-500/10"
               }`}
             >
-              <CloudUpload className="w-12 h-12 text-blue-400 opacity-70" />
+              <CloudUpload className="w-14 h-14 text-blue-400" />
             </motion.div>
             <div>
               <p className="text-lg font-semibold text-white">

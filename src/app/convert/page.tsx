@@ -75,7 +75,14 @@ export default function ConvertPage() {
     state.status === "idle" || state.status === "file_selected";
 
   return (
-    <div className="min-h-screen text-slate-200">
+    <div className="min-h-screen relative text-slate-200">
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse 60% 40% at 50% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 60%)`
+        }}
+        aria-hidden="true"
+      />
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
         {/* Back link */}
         <Link
@@ -97,7 +104,7 @@ export default function ConvertPage() {
         </div>
 
         {/* ── Content per state ── */}
-        <div className="space-y-8">
+        <div className="space-y-8 bg-white/[0.02] backdrop-blur-sm rounded-2xl border border-white/[0.06] p-8">
           {/* Idle / File Selected */}
           {isInputVisible && (
             <>
