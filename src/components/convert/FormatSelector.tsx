@@ -1,29 +1,88 @@
 "use client";
 
-/**
- * FormatSelector — lets the user pick an input format.
- *
- * TODO (Phase 8):
- * - Show an icon grid for each supported format
- *   (PDF, DOCX, PPTX, JPG/PNG, Markdown, TXT)
- * - On selection, notify parent so DropZone updates its
- *   accepted MIME types / file extensions
- */
+import { FileText, File, Monitor, Image, Code, AlignLeft } from "lucide-react";
+import type { ReactNode } from "react";
+
+interface FormatOption {
+  ext: string;
+  mime: string;
+  icon: ReactNode;
+  label: string;
+}
+
+export const FORMAT_OPTIONS: FormatOption[] = [
+  {
+    ext: ".pdf",
+    mime: "application/pdf",
+    icon: <FileText className="w-4 h-4" />,
+    label: "PDF",
+  },
+  {
+    ext: ".docx",
+    mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    icon: <File className="w-4 h-4" />,
+    label: "Word",
+  },
+  {
+    ext: ".pptx",
+    mime: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    icon: <Monitor className="w-4 h-4" />,
+    label: "PPT",
+  },
+  {
+    ext: ".png",
+    mime: "image/png",
+    icon: <Image className="w-4 h-4" />,
+    label: "Image",
+  },
+  {
+    ext: ".md",
+    mime: "text/markdown",
+    icon: <Code className="w-4 h-4" />,
+    label: "Markdown",
+  },
+  {
+    ext: ".txt",
+    mime: "text/plain",
+    icon: <AlignLeft className="w-4 h-4" />,
+    label: "Text",
+  },
+];
 
 interface FormatSelectorProps {
-  /** Currently selected format identifier (e.g. "pdf", "docx"). */
   selectedFormat: string;
-  /** Called when the user picks a different format. */
   onFormatChange: (format: string) => void;
 }
 
 export default function FormatSelector({
-  selectedFormat: _selectedFormat,
-  onFormatChange: _onFormatChange,
+  selectedFormat,
+  onFormatChange,
 }: FormatSelectorProps) {
   return (
-    <div className="text-muted text-xs text-center p-4 border border-dashed border-border rounded-lg">
-      Format Selector — Coming in Phase 8
+    <div>
+      <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">
+        Input format
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {FORMAT_OPTIONS.map(({ ext, icon, label }) => {
+          const isSelected = selectedFormat === ext;
+          return (
+            <button
+              key={ext}
+              onClick={() => onFormatChange(ext)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                isSelected
+                  ? "bg-blue-600 text-white shadow-[0_0_16px_rgba(59,130,246,0.4)]"
+                  : "glass-card text-slate-400 hover:text-white hover:border-white/20"
+              }`}
+              aria-pressed={isSelected}
+            >
+              {icon}
+              {label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

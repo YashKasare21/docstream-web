@@ -1,13 +1,14 @@
 "use client";
 
 import { useReducer, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import DropZone from "@/components/convert/DropZone";
 import TemplateSelector from "@/components/convert/TemplateSelector";
 import ProgressTracker from "@/components/convert/ProgressTracker";
-import ResultCard from "@/components/convert/ResultCard";
 import ErrorCard from "@/components/convert/ErrorCard";
+import FormatSelector, { FORMAT_OPTIONS } from "@/components/convert/FormatSelector";
 import { convertPDF, type ConvertResult } from "@/lib/api";
 
 // ── State machine ──
@@ -53,6 +54,12 @@ function reducer(state: State, action: Action): State {
 export default function ConvertPage() {
   const [state, dispatch] = useReducer(reducer, { status: "idle" });
   const [template, setTemplate] = useState("report");
+  const [selectedFormat, setSelectedFormat] = useState(".pdf");
+  const router = useRouter();
+
+  // Find the format option matching selected extension
+  const formatOpt = FORMAT_OPTIONS.find((f) => f.ext === selectedFormat) ??
+    FORMAT_OPTIONS[0];
 
   const handleConvert = useCallback(async () => {
     if (state.status !== "file_selected") return;
@@ -61,6 +68,16 @@ export default function ConvertPage() {
 
     try {
       const result = await convertPDF(state.file, template);
+
+      // Redirect to preview page instead of showing inline result
+      router.push(
+        `/preview?job_id=${encodeURIComponent(result.job_id)}` +
+          `&tex_url=${encodeURIComponent(result.tex_url)}` +
+          `&pdf_url=${encodeURIComponent(result.pdf_url)}` +
+          `&time=${result.processing_time}`
+      );
+
+      // Still dispatch COMPLETE so the state is correct if navigation is slow
       dispatch({ type: "COMPLETE", result });
     } catch (err) {
       dispatch({
@@ -69,7 +86,7 @@ export default function ConvertPage() {
           err instanceof Error ? err.message : "An unexpected error occurred.",
       });
     }
-  }, [state, template]);
+  }, [state, template, router]);
 
   const isInputVisible =
     state.status === "idle" || state.status === "file_selected";
@@ -79,7 +96,7 @@ export default function ConvertPage() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: `radial-gradient(ellipse 60% 40% at 50% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 60%)`
+          background: `radial-gradient(ellipse 60% 40% at 50% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 60%)`,
         }}
         aria-hidden="true"
       />
@@ -96,10 +113,10 @@ export default function ConvertPage() {
         {/* Heading */}
         <div className="mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
-            Convert your PDF
+            Convert your document
           </h1>
           <p className="text-slate-400">
-            Upload a PDF and select a template. We handle the rest.
+            Upload a file and select a template. We handle the rest.
           </p>
         </div>
 
@@ -108,12 +125,27 @@ export default function ConvertPage() {
           {/* Idle / File Selected */}
           {isInputVisible && (
             <>
+              {/* Format selector above DropZone */}
+              <FormatSelector
+                selectedFormat={selectedFormat}
+                onFormatChange={(fmt) => {
+                  setSelectedFormat(fmt);
+                  // Clear any selected file when format changes
+                  if (state.status === "file_selected") {
+                    dispatch({ type: "REMOVE_FILE" });
+                  }
+                }}
+              />
+
               <DropZone
                 file={state.status === "file_selected" ? state.file : null}
                 onFileSelect={(file) =>
                   dispatch({ type: "SELECT_FILE", file })
                 }
                 onFileRemove={() => dispatch({ type: "REMOVE_FILE" })}
+                acceptedMime={formatOpt.mime}
+                acceptedExt={formatOpt.ext}
+                acceptedLabel={`${formatOpt.label} only`}
               />
               <TemplateSelector selected={template} onSelect={setTemplate} />
 
@@ -133,15 +165,7 @@ export default function ConvertPage() {
           {/* Processing */}
           {state.status === "processing" && <ProgressTracker />}
 
-          {/* Complete */}
-          {state.status === "complete" && (
-            <ResultCard
-              texUrl={state.result.tex_url}
-              pdfUrl={state.result.pdf_url}
-              processingTime={state.result.processing_time}
-              onReset={() => dispatch({ type: "RESET" })}
-            />
-          )}
+          {/* Complete state is handled by router.push to /preview */}
 
           {/* Error */}
           {state.status === "error" && (

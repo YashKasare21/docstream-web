@@ -1,4 +1,5 @@
 export interface ConvertResult {
+  job_id: string;
   tex_url: string;
   pdf_url: string;
   processing_time: number;
@@ -18,7 +19,10 @@ export async function convertPDF(
     throw new Error("AI structuring failed. Please try again.");
   }
 
+  const jobId = "mock-job-" + Date.now();
+
   return {
+    job_id: jobId,
     tex_url: "/mock/document.tex",
     pdf_url: "/mock/document.pdf",
     processing_time: 13.2,

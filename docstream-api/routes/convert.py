@@ -69,16 +69,37 @@ async def convert_v2(
 
 
 @router.get("/v2/preview/{job_id}")
-async def get_preview(job_id: str) -> dict:
-    """Return the compiled PDF as base64 for browser preview (PDF.js).
+async def get_preview(job_id: str):
+    """Serve the compiled PDF for browser preview.
 
     Args:
         job_id: Identifier returned by ``POST /api/v2/convert``.
 
-    Raises:
-        HTTPException: 501 Not Implemented — pending Phase 12.
+    Returns:
+        The PDF file directly with headers that allow PDF.js cross-origin access.
     """
-    raise HTTPException(status_code=501, detail="PDF preview not yet implemented.")
+    import os
+
+    pdf_path = f"/tmp/docstream/{job_id}/output/document.pdf"
+
+    if not os.path.exists(pdf_path):
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                f"Preview not found for job {job_id}. "
+                "The conversion may have failed or expired."
+            ),
+        )
+
+    return FileResponse(
+        path=pdf_path,
+        media_type="application/pdf",
+        filename="document.pdf",
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "no-cache",
+        },
+    )
 
 
 @router.post("/v2/feedback")
@@ -102,9 +123,15 @@ async def submit_feedback(
 
 @router.get("/v2/formats")
 async def list_formats() -> dict:
-    """Return all supported input formats for v2 conversion.
-
-    Raises:
-        HTTPException: 501 Not Implemented — pending Phase 8.
-    """
-    raise HTTPException(status_code=501, detail="Format listing not yet implemented.")
+    """Return all supported input formats for v2 conversion."""
+    return {
+        "formats": [
+            {"extension": ".pdf", "name": "PDF Document", "icon": "file-text"},
+            {"extension": ".docx", "name": "Word Document", "icon": "file-word"},
+            {"extension": ".pptx", "name": "PowerPoint", "icon": "presentation"},
+            {"extension": ".png", "name": "PNG Image", "icon": "image"},
+            {"extension": ".jpg", "name": "JPEG Image", "icon": "image"},
+            {"extension": ".md", "name": "Markdown", "icon": "file-code"},
+            {"extension": ".txt", "name": "Plain Text", "icon": "file"},
+        ]
+    }

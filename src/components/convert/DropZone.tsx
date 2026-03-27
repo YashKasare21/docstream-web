@@ -12,6 +12,12 @@ interface DropZoneProps {
   onFileSelect: (file: File) => void;
   onFileRemove: () => void;
   state?: DropZoneState;
+  /** MIME type to accept — defaults to "application/pdf" */
+  acceptedMime?: string;
+  /** File extension label — defaults to ".pdf" */
+  acceptedExt?: string;
+  /** Short label for the "X only" badge — defaults to "PDF only" */
+  acceptedLabel?: string;
 }
 
 function formatFileSize(bytes: number): string {
@@ -32,6 +38,9 @@ export default function DropZone({
   onFileSelect,
   onFileRemove,
   state: externalState,
+  acceptedMime = "application/pdf",
+  acceptedExt = ".pdf",
+  acceptedLabel = "PDF only",
 }: DropZoneProps) {
   const [internalDragging, setInternalDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -47,18 +56,21 @@ export default function DropZone({
 
   const validateFile = useCallback(
     (f: File): boolean => {
-      if (f.type !== "application/pdf") {
-        alert("Only PDF files are accepted.");
+      // Accept any MIME that matches, or fall back to extension check
+      const extMatch = f.name.toLowerCase().endsWith(acceptedExt);
+      const mimeMatch = f.type === acceptedMime || f.type === "";
+      if (!extMatch && !mimeMatch) {
+        alert(`Only ${acceptedLabel} files are accepted.`);
         return false;
       }
-      if (f.size > 10 * 1024 * 1024) {
-        alert("File size must be under 10 MB.");
+      if (f.size > 20 * 1024 * 1024) {
+        alert("File size must be under 20 MB.");
         return false;
       }
       onFileSelect(f);
       return true;
     },
-    [onFileSelect]
+    [onFileSelect, acceptedMime, acceptedExt, acceptedLabel]
   );
 
   const handleDrop = useCallback(
@@ -100,7 +112,7 @@ export default function DropZone({
       <input
         ref={inputRef}
         type="file"
-        accept=".pdf"
+        accept={`${acceptedMime},${acceptedExt}`}
         onChange={handleChange}
         className="hidden"
       />
@@ -142,7 +154,7 @@ export default function DropZone({
               </p>
               <div className="flex items-center gap-2 flex-wrap justify-center mt-3">
                 <span className="flex items-center gap-1.5 text-xs text-slate-400 bg-white/[0.04] border border-white/[0.08] rounded-full px-3 py-1">
-                  PDF only
+                  {acceptedLabel}
                 </span>
                 <span className="flex items-center gap-1.5 text-xs text-slate-400 bg-white/[0.04] border border-white/[0.08] rounded-full px-3 py-1">
                   Max 10 MB
