@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Download, CheckCircle, RefreshCw } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface DownloadPanelProps {
   texUrl: string;
@@ -9,9 +10,23 @@ interface DownloadPanelProps {
   processingTime?: number;
   onConvertAnother: () => void;
   jobId: string;
+  templateUsed?: string;
+  documentType?: string;
 }
 
 const EMOJIS = ["😞", "😐", "😊", "😄", "🤩"] as const;
+
+// Map emoji to 1-based integer rating
+const EMOJI_RATING: Record<string, number> = {
+  "😞": 1,
+  "😐": 2,
+  "😊": 3,
+  "😄": 4,
+  "🤩": 5,
+};
+
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export default function DownloadPanel({
   texUrl,
@@ -19,6 +34,8 @@ export default function DownloadPanel({
   processingTime,
   onConvertAnother,
   jobId,
+  templateUsed,
+  documentType,
 }: DownloadPanelProps) {
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
   const [comment, setComment] = useState("");
@@ -30,16 +47,23 @@ export default function DownloadPanel({
     setSubmitting(true);
 
     try {
-      const formData = new FormData();
-      formData.append("job_id", jobId);
-      formData.append("emoji_rating", selectedEmoji);
-      formData.append("comment", comment.slice(0, 500));
-      await fetch("/api/v2/feedback", { method: "POST", body: formData });
+      await fetch(`${API_URL}/api/v2/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          job_id: jobId,
+          emoji_rating: EMOJI_RATING[selectedEmoji],
+          comment: comment.trim() || null,
+          template_used: templateUsed ?? null,
+          document_type: documentType ?? null,
+          processing_time: processingTime ?? null,
+        }),
+      });
     } catch {
       // fire and forget — never surface errors to the user
     } finally {
-      setSubmitted(true);
       setSubmitting(false);
+      setSubmitted(true);
     }
   };
 
@@ -88,9 +112,19 @@ export default function DownloadPanel({
           </p>
 
           {submitted ? (
-            <div className="text-center py-3">
-              <p className="text-sm text-green-400 font-medium">
-                Thanks for your feedback! 🙏
+            <div className="flex flex-col items-center gap-2 py-4">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200 }}
+              >
+                <CheckCircle className="w-8 h-8 text-green-400" />
+              </motion.div>
+              <p className="text-sm text-slate-300 font-medium">
+                Thanks for the feedback!
+              </p>
+              <p className="text-xs text-slate-500">
+                It helps us improve Docstream
               </p>
             </div>
           ) : (

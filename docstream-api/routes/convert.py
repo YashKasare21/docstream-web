@@ -102,25 +102,6 @@ async def get_preview(job_id: str):
     )
 
 
-@router.post("/v2/feedback")
-async def submit_feedback(
-    job_id: str = Form(...),
-    emoji_rating: str = Form(...),
-    comment: str = Form(default=""),
-) -> dict:
-    """Store user feedback for a conversion job.
-
-    Body fields:
-        job_id: Conversion job to attach feedback to.
-        emoji_rating: One of 😞 😐 😊 😄 🤩.
-        comment: Optional free-text comment (max 500 chars).
-
-    Raises:
-        HTTPException: 501 Not Implemented — pending Phase 14.
-    """
-    raise HTTPException(status_code=501, detail="Feedback submission not yet implemented.")
-
-
 @router.get("/v2/formats")
 async def list_formats() -> dict:
     """Return all supported input formats for v2 conversion."""

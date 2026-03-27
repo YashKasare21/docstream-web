@@ -3,7 +3,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from database import init_db
 from routes.convert import router as convert_router
+from routes.feedback import router as feedback_router
 from routes.health import router as health_router
 from utils.file_handler import cleanup_old_jobs
 
@@ -11,6 +13,7 @@ from utils.file_handler import cleanup_old_jobs
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup / shutdown lifecycle."""
+    init_db()
     cleanup_old_jobs()
     yield
 
@@ -36,6 +39,7 @@ app.add_middleware(
 
 # Routes
 app.include_router(convert_router)
+app.include_router(feedback_router)
 app.include_router(health_router)
 
 
