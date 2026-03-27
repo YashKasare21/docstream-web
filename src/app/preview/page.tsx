@@ -34,6 +34,8 @@ function PreviewContent() {
   const texUrl = searchParams.get("tex_url") ?? "";
   const jobId = searchParams.get("job_id") ?? "unknown";
   const processingTime = parseFloat(searchParams.get("time") ?? "0");
+  const templateUsed = searchParams.get("template") ?? undefined;
+  const documentType = searchParams.get("doc_type") ?? undefined;
 
   // Shared viewer state (toolbar + viewer are siblings)
   const [currentPage, setCurrentPage] = useState(1);
@@ -160,6 +162,8 @@ function PreviewContent() {
             pdfUrl={pdfUrl}
             processingTime={processingTime}
             jobId={jobId}
+            templateUsed={templateUsed}
+            documentType={documentType}
             onConvertAnother={() => router.push("/convert")}
           />
         </aside>

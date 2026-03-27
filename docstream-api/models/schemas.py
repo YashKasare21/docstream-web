@@ -6,10 +6,14 @@ from pydantic import BaseModel, Field
 
 class ConvertResponse(BaseModel):
     success: bool
+    job_id: str = ""
     tex_url: str | None = None
     pdf_url: str | None = None
     processing_time: float | None = None
     error: str | None = None
+    document_type: str | None = None
+    template_used: str | None = None
+    quality_score: float | None = None
 
 
 class HealthResponse(BaseModel):
