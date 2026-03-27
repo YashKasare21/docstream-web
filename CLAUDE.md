@@ -92,3 +92,53 @@ Standard animation variants in `.superdesign/design-system.md`.
 - `src/lib/api.ts` currently has mocked conversion behavior — check whether a task expects real backend calls before changing flow logic.
 - Local backend requires system tools (`pandoc`, TeX packages, `tesseract`) for full rendering; Docker container installs them automatically.
 - Do not introduce breaking assumptions about the external `docstream` library from within this repo.
+
+## v2 Architecture
+
+v2 is a major upgrade adding multi-format support, semantic analysis, template-aware generation, and AI fallback.
+
+**Supported input formats:** PDF, DOCX, PPTX, JPG/PNG (OCR), Markdown, plain text
+
+**6-stage pipeline:**
+```
+Input File
+    ↓
+FormatRouter           — detects file type, dispatches to handler
+    ↓
+Format Handler         — extracts List[Block] (pdf/docx/pptx/image/md/txt)
+    ↓
+SemanticAnalyzer       — detects DocumentType, creates SemanticChunks
+    ↓
+TemplateMatcher        — maps chunks to template fields (resume/report/ieee/…)
+    ↓
+AI LaTeX Generation    — builds LaTeX with AIProviderChain
+    ↓
+QualityChecker         — technical + professional validation
+    ↓
+Output: .tex + .pdf
+```
+
+**New library modules** (`docstream/core/`):
+- `format_router.py` — `FormatRouter` with `SUPPORTED_FORMATS` dict
+- `format_handlers/` — one handler class per format
+- `semantic_analyzer.py` — `DocumentType` enum, `SemanticAnalyzer`
+- `template_matcher.py` — `TemplateMatcher`, `TemplateSchema`
+- `quality_checker.py` — `QualityChecker`, `QualityReport`
+- `ai_provider.py` — `AIProviderChain` (Gemini → Groq → Ollama fallback)
+
+**AI fallback hierarchy:**
+1. Gemini 1.5 Flash (primary — 1 500 req/day free)
+2. Groq Llama 3.1 70B (fast fallback, generous free tier)
+3. Ollama (local or Colab via ngrok — no rate limits)
+4. `AIUnavailableError` raised if all fail
+
+**New v2 API endpoints** (stubs — all return 501 until implemented):
+- `POST /api/v2/convert` — multi-format upload, returns `job_id`
+- `GET /api/v2/preview/{job_id}` — base64 PDF for PDF.js
+- `POST /api/v2/feedback` — emoji + comment feedback
+- `GET /api/v2/formats` — supported format list
+
+**New frontend stubs:**
+- `src/app/preview/page.tsx` — PDF.js viewer (Phase 12)
+- `src/components/convert/FormatSelector.tsx` — format icon picker (Phase 8)
+- `src/components/feedback/FeedbackWidget.tsx` — emoji feedback (Phase 14)
