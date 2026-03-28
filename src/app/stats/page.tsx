@@ -18,11 +18,12 @@ const EMOJI_MAP: Record<string, string> = {
 
 async function getStats(): Promise<FeedbackStats> {
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/v2/feedback/stats`, {
+    const apiBase =
+      process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+    const res = await fetch(`${apiBase}/api/v2/feedback/stats`, {
       next: { revalidate: 60 },
     });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return res.json();
   } catch {
     return {

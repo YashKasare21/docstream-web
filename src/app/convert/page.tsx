@@ -1,13 +1,13 @@
 "use client";
 
 import { useReducer, useState, useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import DropZone from "@/components/convert/DropZone";
 import TemplateSelector from "@/components/convert/TemplateSelector";
 import ProgressTracker from "@/components/convert/ProgressTracker";
 import ErrorCard from "@/components/convert/ErrorCard";
+import ResultCard from "@/components/convert/ResultCard";
 import FormatSelector, { FORMAT_OPTIONS } from "@/components/convert/FormatSelector";
 import ProviderStatus from "@/components/convert/ProviderStatus";
 import { convertDocument, checkHealth, type ConvertResult } from "@/lib/api";
@@ -53,7 +53,6 @@ export default function ConvertPage() {
   const [template, setTemplate] = useState("report");
   const [selectedFormat, setSelectedFormat] = useState(".pdf");
   const [backendUp, setBackendUp] = useState<boolean | null>(null);
-  const router = useRouter();
 
   // Check backend availability once on mount
   useEffect(() => {
@@ -70,17 +69,6 @@ export default function ConvertPage() {
 
     try {
       const result = await convertDocument(state.file, template);
-
-      router.push(
-        `/preview` +
-          `?job_id=${encodeURIComponent(result.job_id)}` +
-          `&tex_url=${encodeURIComponent(result.tex_url)}` +
-          `&pdf_url=${encodeURIComponent(result.pdf_url)}` +
-          `&time=${result.processing_time}` +
-          `&template=${encodeURIComponent(template)}` +
-          `&doc_type=${encodeURIComponent(result.document_type ?? "")}`
-      );
-
       dispatch({ type: "COMPLETE", result });
     } catch (err) {
       dispatch({
@@ -89,7 +77,7 @@ export default function ConvertPage() {
           err instanceof Error ? err.message : "An unexpected error occurred.",
       });
     }
-  }, [state, template, router]);
+  }, [state, template]);
 
   const isInputVisible =
     state.status === "idle" || state.status === "file_selected";
@@ -180,6 +168,19 @@ export default function ConvertPage() {
 
           {/* Processing */}
           {state.status === "processing" && <ProgressTracker />}
+
+          {/* Complete */}
+          {state.status === "complete" && (
+            <ResultCard
+              texUrl={state.result.tex_url}
+              pdfUrl={state.result.pdf_url}
+              processingTime={state.result.processing_time}
+              onConvertAnother={() => dispatch({ type: "RESET" })}
+              jobId={state.result.job_id}
+              templateUsed={state.result.template_used}
+              documentType={state.result.document_type}
+            />
+          )}
 
           {/* Error */}
           {state.status === "error" && (
