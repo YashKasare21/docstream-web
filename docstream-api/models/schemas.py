@@ -1,28 +1,33 @@
-from datetime import datetime
+"""Pydantic schemas for API request/response models."""
+
 from typing import Optional
 
 from pydantic import BaseModel, Field
 
 
 class ConvertResponse(BaseModel):
+    """Response from conversion endpoint."""
+
     success: bool
     job_id: str = ""
-    tex_url: str | None = None
-    pdf_url: str | None = None
-    processing_time: float | None = None
-    error: str | None = None
-    document_type: str | None = None
-    template_used: str | None = None
-    quality_score: float | None = None
+    tex_url: Optional[str] = None
+    pdf_url: Optional[str] = None
+    processing_time: Optional[float] = None
+    error: Optional[str] = None
+    template_used: Optional[str] = None
+    document_type: Optional[str] = None
+    quality_score: Optional[float] = None
 
 
 class HealthResponse(BaseModel):
+    """Health check response."""
+
     status: str
     version: str
 
 
 class FeedbackCreate(BaseModel):
-    """Request body for POST /api/v2/feedback."""
+    """Feedback submission request."""
 
     job_id: str
     emoji_rating: int = Field(..., ge=1, le=5)
@@ -33,7 +38,7 @@ class FeedbackCreate(BaseModel):
 
 
 class FeedbackResponse(BaseModel):
-    """Response for feedback submission."""
+    """Feedback submission response."""
 
     success: bool
     message: str
