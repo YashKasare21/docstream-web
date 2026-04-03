@@ -9,7 +9,6 @@ import ProgressTracker from "@/components/convert/ProgressTracker";
 import ErrorCard from "@/components/convert/ErrorCard";
 import ResultCard from "@/components/convert/ResultCard";
 import FormatSelector, { FORMAT_OPTIONS } from "@/components/convert/FormatSelector";
-import ProviderStatus from "@/components/convert/ProviderStatus";
 import { convertDocument, checkHealth, type ConvertResult } from "@/lib/api";
 
 // ── State machine ──────────────────────────────────────────────────────────────
@@ -122,9 +121,6 @@ export default function ConvertPage() {
           <p className="text-slate-400">
             Upload a file and select a template. We handle the rest.
           </p>
-          <div className="mt-3">
-            <ProviderStatus />
-          </div>
         </div>
 
         {/* ── Content per state ── */}
