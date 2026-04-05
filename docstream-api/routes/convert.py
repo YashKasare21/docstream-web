@@ -112,11 +112,12 @@ async def serve_file(job_id: str, filename: str):
         )
 
     # Only serve known safe types
-    if not (filename.endswith(".tex") or filename.endswith(".pdf")):
+    allowed_extensions = (".tex", ".pdf", ".png", ".jpg", ".jpeg", ".gif")
+    if not any(filename.endswith(ext) for ext in allowed_extensions):
         from fastapi import HTTPException
         raise HTTPException(
             status_code=400,
-            detail="Only .tex and .pdf files are served.",
+            detail="Only .tex, .pdf, and image files are served.",
         )
 
     file_path = Path(f"/tmp/docstream/{job_id}/output/{filename}")
@@ -127,11 +128,17 @@ async def serve_file(job_id: str, filename: str):
             detail="File not found. Conversion may have expired.",
         )
 
-    media_type = (
-        "application/pdf"
-        if filename.endswith(".pdf")
-        else "text/plain; charset=utf-8"
-    )
+    if filename.endswith(".pdf"):
+        media_type = "application/pdf"
+    elif filename.endswith(".tex"):
+        media_type = "text/plain; charset=utf-8"
+    elif filename.endswith((".png",)):
+        media_type = "image/png"
+    elif filename.endswith((".jpg", ".jpeg")):
+        media_type = "image/jpeg"
+    else:
+        media_type = "application/octet-stream"
+
     return FileResponse(
         path=str(file_path),
         media_type=media_type,
