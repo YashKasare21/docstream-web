@@ -26,24 +26,17 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-_extra_origins = [
+allowed_origins = [
     o.strip()
-    for o in os.getenv("ALLOWED_ORIGINS", "").split(",")
+    for o in os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
     if o.strip()
 ]
-_cors_origins = list(
-    {
-        "http://localhost:3000",
-        "https://docstream-web.vercel.app",
-        *_extra_origins,
-    }
-)
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_cors_origins,
-    allow_methods=["GET", "POST"],
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
