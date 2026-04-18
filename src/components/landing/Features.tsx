@@ -10,9 +10,6 @@ const features = [
     description:
       "Our semantic engine understands context. It keeps math environments, citations, and document hierarchies perfectly intact during conversion.",
     iconColor: "text-indigo-400",
-    iconBg: "bg-indigo-500/10",
-    iconBgHover: "group-hover:bg-indigo-500/20",
-    borderColor: "border-l-indigo-500",
   },
   {
     icon: Layout,
@@ -20,9 +17,6 @@ const features = [
     description:
       "Output directly into Report, IEEE, or Resume formats. Docstream handles the boilerplate so you focus on the content.",
     iconColor: "text-blue-400",
-    iconBg: "bg-blue-500/10",
-    iconBgHover: "group-hover:bg-blue-500/20",
-    borderColor: "border-l-blue-500",
   },
   {
     icon: ScanText,
@@ -30,9 +24,6 @@ const features = [
     description:
       "Tesseract OCR kicks in automatically for image-based PDFs. No configuration needed — it just works.",
     iconColor: "text-cyan-400",
-    iconBg: "bg-cyan-500/10",
-    iconBgHover: "group-hover:bg-cyan-500/20",
-    borderColor: "border-l-cyan-500",
   },
 ];
 
@@ -67,14 +58,12 @@ export default function Features() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               whileHover={{ y: -6 }}
-              className={`p-8 rounded-2xl bg-slate-900/50 border border-slate-800 border-l-4 ${feature.borderColor} hover:border-slate-700 transition-all duration-300 group hover:shadow-lg hover:shadow-blue-500/5`}
+              className="glass-card p-6 group"
             >
-              <div
-                className={`w-12 h-12 rounded-lg ${feature.iconBg} ${feature.iconBgHover} flex items-center justify-center mb-6 transition-colors duration-300`}
-              >
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 group-hover:border-blue-500/40 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.2)] transition-all duration-300">
                 <Icon className={`w-6 h-6 ${feature.iconColor}`} />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
+              <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-blue-100 transition-colors">
                 {feature.title}
               </h3>
               <p className="text-slate-400 leading-relaxed">

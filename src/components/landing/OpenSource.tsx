@@ -20,9 +20,9 @@ export default function OpenSource() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6 }}
-        className="relative rounded-3xl p-[1px] bg-gradient-to-r from-blue-500/30 via-indigo-500/30 to-blue-500/30"
+        className="gradient-border p-8 text-center"
       >
-        <div className="rounded-3xl bg-gradient-to-br from-slate-900 to-[#0F172A] p-10 lg:p-16 text-center">
+        <div className="relative z-10">
           {/* Title */}
           <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
             Proudly Open Source
@@ -46,7 +46,7 @@ export default function OpenSource() {
 
             <button
               onClick={handleCopy}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-mono text-sm rounded-xl border border-slate-700 hover:border-slate-600 transition-all duration-200"
+              className="inline-flex items-center gap-3 bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 font-mono text-sm text-green-400 cursor-pointer hover:border-green-500/30 hover:bg-black/60 transition-all duration-200"
             >
               <span className="text-slate-400">$</span>
               pip install docstream
