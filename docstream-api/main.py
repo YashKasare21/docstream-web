@@ -1,4 +1,6 @@
+import logging
 import os
+import subprocess
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -10,12 +12,17 @@ from routes.feedback import router as feedback_router
 from routes.health import router as health_router
 from utils.file_handler import cleanup_old_jobs
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup / shutdown lifecycle."""
     init_db()
     cleanup_old_jobs()
+    result = subprocess.run(['which', 'xelatex'], capture_output=True, text=True)
+    logger.info(f"xelatex location: {result.stdout.strip()}")
+    logger.info(f"xelatex found: {bool(result.stdout.strip())}")
     yield
 
 
