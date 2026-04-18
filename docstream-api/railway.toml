@@ -9,10 +9,12 @@ restartPolicyType = "on_failure"
 
 [nixpacks]
 aptPackages = [
+  "pandoc",
   "texlive-xetex",
   "texlive-latex-extra",
   "texlive-fonts-recommended",
   "texlive-fonts-extra",
   "texlive-science",
   "fonts-liberation",
+  "tesseract-ocr",
 ]

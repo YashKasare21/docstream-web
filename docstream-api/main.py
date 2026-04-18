@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -25,14 +26,23 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+_extra_origins = [
+    o.strip()
+    for o in os.getenv("ALLOWED_ORIGINS", "").split(",")
+    if o.strip()
+]
+_cors_origins = list(
+    {
+        "http://localhost:3000",
+        "https://docstream-web.vercel.app",
+        *_extra_origins,
+    }
+)
+
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "https://docstream-web.vercel.app",
-        "*",
-    ],
+    allow_origins=_cors_origins,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
