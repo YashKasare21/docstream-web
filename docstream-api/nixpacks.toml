@@ -2,6 +2,7 @@
 nixPkgs = [
   "python312",
   "texlive.combined.scheme-medium",
+  "wget",
   "fontconfig",
   "gcc",
 ]
@@ -10,6 +11,9 @@ nixPkgs = [
 cmds = [
   "python -m venv --copies /opt/venv",
   ". /opt/venv/bin/activate && pip install -r requirements.txt",
+  "mkdir -p /usr/local/share/texmf/tex/latex/IEEEtran",
+  "wget -q https://mirrors.ctan.org/macros/latex/contrib/IEEEtran/IEEEtran.cls -O /usr/local/share/texmf/tex/latex/IEEEtran/IEEEtran.cls",
+  "texhash /usr/local/share/texmf || true",
 ]
 
 [start]
