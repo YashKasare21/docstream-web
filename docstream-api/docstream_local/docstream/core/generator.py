@@ -954,7 +954,7 @@ def _replace_bibliography(latex: str, real_bib: str) -> str:
         return latex + '\n' + real_bib
 
     if len(all_bibs) == 1:
-        result = bib_pattern.sub(real_bib, latex, count=1)
+        result = bib_pattern.sub(lambda m: real_bib, latex, count=1)
         logger.info("Replaced AI bibliography with extracted references")
         return result
 
@@ -1243,7 +1243,7 @@ def _postprocess_latex(latex: str) -> str:
         (r'\\norm(?=[^a-zA-Z])', r'\\|\\cdot\\|'),
     ]
     for pattern, replacement in undefined_fixes:
-        latex = re.sub(pattern, replacement, latex)
+        latex = re.sub(pattern, lambda m, r=replacement: r, latex)
 
     # Fix 9: Clean section headings of Roman numeral prefixes and
     # ALL-CAPS formatting. Also repairs Groq's word-splitting artifact
