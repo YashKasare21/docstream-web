@@ -101,15 +101,15 @@ export default function ConvertPage() {
         </Link>
 
         {/* Backend offline banner */}
+        {backendUp === null && (
+          <div className="mb-6 flex items-center gap-2 px-4 py-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm">
+            <span>Connecting to server... This may take up to 30 seconds on first load.</span>
+          </div>
+        )}
         {backendUp === false && (
           <div className="mb-6 flex items-center gap-2 px-4 py-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-sm">
             <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-            <span>
-              Backend not reachable. Start the FastAPI server:{" "}
-              <code className="font-mono text-xs">
-                uvicorn main:app --reload
-              </code>
-            </span>
+            <span>Server is starting up. Please wait a moment and try again.</span>
           </div>
         )}
 

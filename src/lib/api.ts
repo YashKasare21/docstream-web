@@ -60,14 +60,26 @@ export async function convertDocument(
 export const convertPDF = convertDocument;
 
 export async function checkHealth(): Promise<boolean> {
-  try {
-    const res = await fetch(`${API_BASE}/api/health`, {
-      signal: AbortSignal.timeout(3000),
-    });
-    return res.ok;
-  } catch {
-    return false;
+  const maxRetries = 3;
+  const retryDelay = 10000;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(
+        `${API_BASE}/api/health`,
+        { 
+          signal: AbortSignal.timeout(15000),
+          cache: 'no-store'
+        }
+      );
+      if (response.ok) return true;
+    } catch {
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+      }
+    }
   }
+  return false;
 }
 
 export async function getFormats(): Promise<string[]> {
