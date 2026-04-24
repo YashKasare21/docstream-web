@@ -105,7 +105,7 @@ export default function Hero() {
             <ArrowRight className="w-4 h-4" />
           </a>
           <a
-            href="https://github.com"
+            href="https://github.com/YashKasare21/docstream"
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-3 rounded-xl border border-white/10 text-slate-300 hover:border-white/20 hover:text-white hover:bg-white/5 flex items-center gap-2 transition-all duration-200"

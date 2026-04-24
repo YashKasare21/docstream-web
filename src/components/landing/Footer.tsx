@@ -3,9 +3,9 @@ import Link from "next/link";
 
 export default function Footer() {
   const links = [
-    { label: "GitHub", href: "https://github.com", external: true },
-    { label: "PyPI", href: "https://pypi.org", external: true },
-    { label: "Documentation", href: "#", external: false },
+    { label: "GitHub", href: "https://github.com/YashKasare21/docstream", external: true },
+    { label: "PyPI", href: "https://pypi.org/project/docstream", external: true },
+    { label: "Documentation", href: "https://yashkasare21.github.io/docstream", external: true },
     { label: "Contributing", href: "#", external: false },
   ];
 

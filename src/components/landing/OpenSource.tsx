@@ -35,7 +35,7 @@ export default function OpenSource() {
           {/* Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-4">
             <a
-              href="https://github.com"
+              href="https://github.com/YashKasare21/docstream"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-xl border border-slate-700 hover:border-slate-600 transition-all duration-200"

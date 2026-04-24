@@ -18,7 +18,7 @@ export default function Navbar() {
   const navLinks = [
     { label: "Features", href: "#features" },
     { label: "Templates", href: "#how-it-works" },
-    { label: "Documentation", href: "#open-source" },
+    { label: "Documentation", href: "https://yashkasare21.github.io/docstream", external: true },
   ];
 
   return (
@@ -48,13 +48,15 @@ export default function Navbar() {
               <a
                 key={link.label}
                 href={link.href}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
                 className="text-slate-400 hover:text-white transition-colors duration-200 text-sm relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-blue-400 hover:after:w-full after:transition-all after:duration-300"
               >
                 {link.label}
               </a>
             ))}
             <a
-              href="https://github.com"
+              href="https://github.com/YashKasare21/docstream"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-medium text-slate-300 border border-slate-700 hover:border-slate-500 px-4 py-2 rounded-lg transition-all duration-200 hover:bg-slate-800"
@@ -98,6 +100,8 @@ export default function Navbar() {
                 <a
                   key={link.label}
                   href={link.href}
+                  target={link.external ? "_blank" : undefined}
+                  rel={link.external ? "noopener noreferrer" : undefined}
                   onClick={() => setMobileMenuOpen(false)}
                   className="block text-sm text-slate-400 hover:text-white transition-colors py-2"
                 >
@@ -106,7 +110,7 @@ export default function Navbar() {
               ))}
               <div className="pt-4 flex flex-col gap-3">
                 <a
-                  href="https://github.com"
+                  href="https://github.com/YashKasare21/docstream"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm font-medium text-slate-300 border border-slate-700 px-4 py-2 rounded-lg text-center hover:bg-slate-800 transition-all"
